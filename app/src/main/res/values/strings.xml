@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Musify</string>
+    <string name="user_name">Nick</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="login_error">Invalid user/password</string>
+    <string name="register_error">The user exists in the app</string>
+</resources>
