@@ -4,8 +4,7 @@
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
-    <string name="login_error">Invalid user/password</string>
-    <string name="register_error">The user exists in the app</string>
     <string name="chatbot">Chatbot</string>
     <string name="message_type">Escribe un mensaje</string>
+    <string name="api_host">http://10.0.2.2:8000</string>
 </resources>

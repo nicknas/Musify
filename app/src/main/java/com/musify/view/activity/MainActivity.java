@@ -10,68 +10,84 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.musify.R;
-import com.musify.controller.MainController;
-import com.musify.model.entity.User;
+import com.musify.model.MusifyAPIRequestQueue;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class MainActivity extends AppCompatActivity {
-    private MainController mainController;
+    private MusifyAPIRequestQueue requests;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mainController = new MainController(getApplicationContext());
+        requests = MusifyAPIRequestQueue.getInstance(this);
         Button loginButton = findViewById(R.id.loginButton);
         Button registerButton = findViewById(R.id.registerButton);
+        EditText userInput = findViewById(R.id.usernameInput);
+        EditText passwordInput = findViewById(R.id.passwordInput);
         loginButton.setOnClickListener((v) -> {
-            ExecutorService userExecutor = Executors.newSingleThreadExecutor();
-            User user = null;
             try {
-                user = userExecutor.submit(() -> mainController.onLogin(((EditText)findViewById(R.id.usernameInput)).getText().toString(),
-                        ((EditText) findViewById(R.id.passwordInput)).getText().toString())).get();
-            } catch (ExecutionException e) {
+                JSONObject login_body = new JSONObject();
+                login_body.put("user_name", userInput.getText().toString());
+                login_body.put("password", passwordInput.getText().toString());
+                JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.POST, getString(R.string.api_host) + "/login/", login_body, response ->
+                {
+                    Intent i = new Intent(this, ChatActivity.class);
+                    i.putExtra("username", userInput.getText().toString());
+                    startActivity(i);
+                }, error ->
+                {
+                    if (error.networkResponse.statusCode == 400) {
+                        String errorMessage = null;
+                        try {
+                            errorMessage = new JSONObject(new String(error.networkResponse.data)).getString("error");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Toast loginError = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
+                        loginError.show();
+                    }
+                });
+                requests.addToRequestQueue(loginRequest);
+            } catch (JSONException e) {
                 e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if (user == null) {
-                Toast loginError = Toast.makeText(this, R.string.login_error, Toast.LENGTH_SHORT);
-                loginError.show();
-            }
-            else {
-                Intent i = new Intent(this, ChatActivity.class);
-                i.putExtra("username", user.userName);
-                startActivity(i);
             }
         });
         registerButton.setOnClickListener((v) -> {
-            ExecutorService userExecutor = Executors.newSingleThreadExecutor();
-            User user = null;
             try {
-                user = userExecutor.submit(() -> mainController.onRegister(((EditText)findViewById(R.id.usernameInput)).getText().toString(),
-                        ((EditText) findViewById(R.id.passwordInput)).getText().toString())).get();
-            } catch (ExecutionException e) {
+                JSONObject login_body = new JSONObject();
+                login_body.put("user_name", userInput.getText().toString());
+                login_body.put("password", passwordInput.getText().toString());
+                JsonObjectRequest registerRequest = new JsonObjectRequest(Request.Method.POST, getString(R.string.api_host) + "/register/", login_body, response ->
+                {
+                    Intent i = new Intent(this, ChatActivity.class);
+                    i.putExtra("username", userInput.getText().toString());
+                    startActivity(i);
+                }, error ->
+                {
+                    if (error.networkResponse.statusCode == 400) {
+                        String errorMessage = null;
+                        try {
+                            errorMessage = new JSONObject(new String(error.networkResponse.data)).getString("error");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Toast registerError = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
+                        registerError.show();
+                    }
+                });
+                requests.addToRequestQueue(registerRequest);
+            } catch (JSONException e) {
                 e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            if (user == null) {
-                Toast registerError = Toast.makeText(this, R.string.register_error, Toast.LENGTH_SHORT);
-                registerError.show();
-            }
-            else {
-                Intent i = new Intent(this, ChatActivity.class);
-                i.putExtra("username", user.userName);
-                startActivity(i);
             }
         });
-        EditText userInput = findViewById(R.id.usernameInput);
-        EditText passwordInput = findViewById(R.id.passwordInput);
+
         TextWatcher inputWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -79,8 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (mainController.handleLoginRegisterButtons(((EditText)findViewById(R.id.usernameInput)).getText().toString(),
-                        ((EditText) findViewById(R.id.passwordInput)).getText().toString())){
+                if (!userInput.getText().toString().isEmpty() && !passwordInput.getText().toString().isEmpty()){
                     loginButton.setEnabled(true);
                     registerButton.setEnabled(true);
                 }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.musify.R;
 
+
 public class ChatActivity extends AppCompatActivity {
 
     @Override
