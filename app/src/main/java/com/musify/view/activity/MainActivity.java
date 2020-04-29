@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject login_body = new JSONObject();
                 login_body.put("user_name", userInput.getText().toString());
                 login_body.put("password", passwordInput.getText().toString());
-                JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.POST, getString(R.string.api_host) + "/login/", login_body, response ->
+                JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.POST, getString(R.string.api_host) + "/login", login_body, response ->
                 {
                     Intent i = new Intent(this, ChatActivity.class);
                     i.putExtra("username", userInput.getText().toString());
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject login_body = new JSONObject();
                 login_body.put("user_name", userInput.getText().toString());
                 login_body.put("password", passwordInput.getText().toString());
-                JsonObjectRequest registerRequest = new JsonObjectRequest(Request.Method.POST, getString(R.string.api_host) + "/register/", login_body, response ->
+                JsonObjectRequest registerRequest = new JsonObjectRequest(Request.Method.POST, getString(R.string.api_host) + "/register", login_body, response ->
                 {
                     Intent i = new Intent(this, ChatActivity.class);
                     i.putExtra("username", userInput.getText().toString());
