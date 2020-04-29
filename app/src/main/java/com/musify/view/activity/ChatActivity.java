@@ -22,6 +22,7 @@ import com.musify.model.MusifyAPIRequestQueue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 
 public class ChatActivity extends AppCompatActivity {
@@ -37,11 +38,12 @@ public class ChatActivity extends AppCompatActivity {
         FloatingActionButton sendMessageButton = findViewById(R.id.send_message_button);
         TextView chatText = findViewById(R.id.chat_text);
         EditText userMessageInput = findViewById(R.id.user_message_input);
+        TextView titulo = findViewById(R.id.chatbot_title);
 
         sendMessageButton.setOnClickListener((view) -> {
             if (!userMessageInput.getText().toString().isEmpty()){
                 SpannableString userText = new SpannableString("You: " + userMessageInput.getText().toString() + "\n\n");
-                userText.setSpan(new ForegroundColorSpan(Color.CYAN), 0, userMessageInput.getText().toString().length() - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                userText.setSpan(new ForegroundColorSpan(Color.CYAN), 0, userText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 chatText.append(userText);
                 JSONObject requestSongBody = new JSONObject();
                 try {
@@ -53,11 +55,12 @@ public class ChatActivity extends AppCompatActivity {
                 {
                     try {
                         SpannableString chatbotText = new SpannableString("Chatbot: " + response.getString("response") + "\n\n");
-                        chatbotText.setSpan(new ForegroundColorSpan(Color.GREEN), 0, response.getString("response").length() - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        chatbotText.setSpan(new ForegroundColorSpan(Color.GREEN), 0, chatbotText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         chatText.append(chatbotText);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    titulo.setText(R.string.chatbot);
                 }, error ->
                 {
                     if (error.networkResponse.statusCode == 400) {
@@ -70,7 +73,9 @@ public class ChatActivity extends AppCompatActivity {
                         Toast loginError = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
                         loginError.show();
                     }
+                    titulo.setText(R.string.chatbot);
                 });
+                titulo.setText(getString(R.string.chatbot) + " está contestando");
                 requests.addToRequestQueue(requestSongsRequest);
                 userMessageInput.setText("");
             }
