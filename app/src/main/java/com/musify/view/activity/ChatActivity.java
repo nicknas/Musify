@@ -100,8 +100,12 @@ public class ChatActivity extends AppCompatActivity {
                     titulo.setText(R.string.chatbot);
                     scroll.scrollTo(0, scroll.getBottom());
                     try {
-                        if (response.getString("intent").equals("Recoger canción") || response.getString("intent").equals("Recoger artista") || response.getString("intent").equals("Recoger album"))
+                        if (response.getString("intent").equals("Recoger canción") || response.getString("intent").equals("Recoger artista") || response.getString("intent").equals("Recoger album")) {
+                            requestRecommendationsRequest.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0,
+                                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                             requests.addToRequestQueue(requestRecommendationsRequest);
+                        }
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -119,11 +123,9 @@ public class ChatActivity extends AppCompatActivity {
                     }
                     titulo.setText(R.string.chatbot);
                 });
-                requestSongsRequest.setRetryPolicy(new DefaultRetryPolicy(
-                        40000,
-                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                 titulo.setText(getString(R.string.chatbot) + " está contestando");
+                requestSongsRequest.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0,
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                 requests.addToRequestQueue(requestSongsRequest);
                 userMessageInput.setText("");
             }
