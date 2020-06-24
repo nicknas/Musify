@@ -1,7 +1,7 @@
 package com.musify.view.activity;
 
 import android.view.View;
-import android.widget.ScrollView;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -12,9 +12,6 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -23,6 +20,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.musify.R;
 import com.musify.model.MusifyAPIRequestQueue;
 
+import com.musify.model.message.Message;
+import com.musify.view.message.MessageAdapter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,7 +31,7 @@ import org.w3c.dom.Text;
 public class ChatActivity extends AppCompatActivity {
     private String user;
     private MusifyAPIRequestQueue requests;
-    private ScrollView scroll;
+    private MessageAdapter messageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,15 +40,15 @@ public class ChatActivity extends AppCompatActivity {
         user = getIntent().getStringExtra("username");
         requests = MusifyAPIRequestQueue.getInstance(this);
         FloatingActionButton sendMessageButton = findViewById(R.id.send_message_button);
-        TextView chatText = findViewById(R.id.chat_text);
         EditText userMessageInput = findViewById(R.id.user_message_input);
         TextView titulo = findViewById(R.id.chatbot_title);
-        scroll = findViewById(R.id.scrollView2);
+        ListView messagesView = findViewById(R.id.messages_view);
+        messagesView.setDivider(null);
+        messageAdapter = new MessageAdapter(this);
+        messagesView.setAdapter(messageAdapter);
         sendMessageButton.setOnClickListener((view) -> {
             if (!userMessageInput.getText().toString().isEmpty()){
-                SpannableString userText = new SpannableString("You: " + userMessageInput.getText().toString() + "\n\n");
-                userText.setSpan(new ForegroundColorSpan(Color.CYAN), 0, userText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                chatText.append(userText);
+                messageAdapter.add(new Message(userMessageInput.getText().toString(), true));
                 JSONObject requestSongBody = new JSONObject();
                 try {
                     requestSongBody.put("user_input", userMessageInput.getText().toString());
@@ -60,19 +59,16 @@ public class ChatActivity extends AppCompatActivity {
                 {
                     try {
                         JSONArray songs = response.getJSONArray("songs");
-                        String chatbotResponse = "Chatbot: Estas son las canciones que te recomiendo:";
+                        String chatbotResponse = "Estas son las canciones que te recomiendo:";
                         for (int i = 0; i < songs.length(); i++) {
                             chatbotResponse += "\n -" + songs.getJSONObject(i).getString("song") + " del artista " + songs.getJSONObject(i).getString("artist");
                         }
-                        SpannableString chatbotText = new SpannableString(chatbotResponse + "\n\n");
-                        chatbotText.setSpan(new ForegroundColorSpan(Color.GREEN), 0, chatbotText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        chatText.append(chatbotText);
+                        messageAdapter.add(new Message(chatbotResponse, false));
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     titulo.setText(R.string.chatbot);
-                    scroll.scrollTo(0, scroll.getBottom());
                 }, error ->
                 {
                     if (error.networkResponse.statusCode == 400) {
@@ -90,17 +86,14 @@ public class ChatActivity extends AppCompatActivity {
                 JsonObjectRequest requestSongsRequest = new JsonObjectRequest(Request.Method.POST, getString(R.string.api_host) + "/" + user + "/request_songs", requestSongBody, response ->
                 {
                     try {
-                        SpannableString chatbotText = new SpannableString("Chatbot: " + response.getString("response") + "\n\n");
-                        chatbotText.setSpan(new ForegroundColorSpan(Color.GREEN), 0, chatbotText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        chatText.append(chatbotText);
-
+                        messageAdapter.add(new Message(response.getString("response"), false));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     titulo.setText(R.string.chatbot);
-                    scroll.scrollTo(0, scroll.getBottom());
                     try {
                         if (response.getString("intent").equals("Recoger canción") || response.getString("intent").equals("Recoger artista") || response.getString("intent").equals("Recoger album")) {
+                            titulo.setText(getString(R.string.chatbot) + " está contestando");
                             requestRecommendationsRequest.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0,
                                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                             requests.addToRequestQueue(requestRecommendationsRequest);
