@@ -43,7 +43,6 @@ public class ChatActivity extends AppCompatActivity {
         EditText userMessageInput = findViewById(R.id.user_message_input);
         TextView titulo = findViewById(R.id.chatbot_title);
         ListView messagesView = findViewById(R.id.messages_view);
-        messagesView.setDivider(null);
         messageAdapter = new MessageAdapter(this);
         messagesView.setAdapter(messageAdapter);
         sendMessageButton.setOnClickListener((view) -> {
