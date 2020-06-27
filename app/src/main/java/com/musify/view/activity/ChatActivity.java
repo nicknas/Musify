@@ -51,7 +51,7 @@ public class ChatActivity extends AppCompatActivity {
         sendMessageButton.setOnClickListener((view) -> {
             if (!userMessageInput.getText().toString().isEmpty()){
                 messageAdapter.add(new Message(userMessageInput.getText().toString(), true));
-                messageView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
+                messageView.scrollToPosition(messageAdapter.getItemCount() - 1);
                 JSONObject requestSongBody = new JSONObject();
                 try {
                     requestSongBody.put("user_input", userMessageInput.getText().toString());
@@ -67,7 +67,7 @@ public class ChatActivity extends AppCompatActivity {
                             chatbotResponse += "\n -" + songs.getJSONObject(i).getString("song") + " del artista " + songs.getJSONObject(i).getString("artist");
                         }
                         messageAdapter.add(new Message(chatbotResponse, false));
-                        messageView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
+                        messageView.scrollToPosition(messageAdapter.getItemCount() - 1);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -91,7 +91,7 @@ public class ChatActivity extends AppCompatActivity {
                 {
                     try {
                         messageAdapter.add(new Message(response.getString("response"), false));
-                        messageView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
+                        messageView.scrollToPosition(messageAdapter.getItemCount() - 1);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
