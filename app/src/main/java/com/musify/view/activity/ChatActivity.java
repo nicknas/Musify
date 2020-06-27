@@ -13,6 +13,8 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -32,6 +34,7 @@ public class ChatActivity extends AppCompatActivity {
     private String user;
     private MusifyAPIRequestQueue requests;
     private MessageAdapter messageAdapter;
+    private RecyclerView messageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +45,13 @@ public class ChatActivity extends AppCompatActivity {
         FloatingActionButton sendMessageButton = findViewById(R.id.send_message_button);
         EditText userMessageInput = findViewById(R.id.user_message_input);
         TextView titulo = findViewById(R.id.chatbot_title);
-        ListView messagesView = findViewById(R.id.messages_view);
+        messageView = findViewById(R.id.messages_view);
         messageAdapter = new MessageAdapter(this);
-        messagesView.setAdapter(messageAdapter);
+        messageView.setAdapter(messageAdapter);
         sendMessageButton.setOnClickListener((view) -> {
             if (!userMessageInput.getText().toString().isEmpty()){
                 messageAdapter.add(new Message(userMessageInput.getText().toString(), true));
+                messageView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
                 JSONObject requestSongBody = new JSONObject();
                 try {
                     requestSongBody.put("user_input", userMessageInput.getText().toString());
@@ -63,6 +67,7 @@ public class ChatActivity extends AppCompatActivity {
                             chatbotResponse += "\n -" + songs.getJSONObject(i).getString("song") + " del artista " + songs.getJSONObject(i).getString("artist");
                         }
                         messageAdapter.add(new Message(chatbotResponse, false));
+                        messageView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -86,6 +91,7 @@ public class ChatActivity extends AppCompatActivity {
                 {
                     try {
                         messageAdapter.add(new Message(response.getString("response"), false));
+                        messageView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
