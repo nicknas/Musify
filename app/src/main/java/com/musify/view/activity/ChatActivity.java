@@ -93,7 +93,7 @@ public class ChatActivity extends AppCompatActivity {
                                 || response.getString("intent").equals("Recoger artista v2")
                                 || response.getString("intent").equals("Recoger album v2")) {
                             titulo.setText(getString(R.string.chatbot) + " está contestando");
-                            requestRecommendationsRequest.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0,
+                            requestRecommendationsRequest.setRetryPolicy(new DefaultRetryPolicy(60 * 1000, 0,
                                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                             requests.addToRequestQueue(requestRecommendationsRequest);
                         }
@@ -116,7 +116,7 @@ public class ChatActivity extends AppCompatActivity {
                     titulo.setText(R.string.chatbot);
                 });
                 titulo.setText(getString(R.string.chatbot) + " está contestando");
-                requestSongsRequest.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0,
+                requestSongsRequest.setRetryPolicy(new DefaultRetryPolicy(60 * 1000, 0,
                         DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
                 requests.addToRequestQueue(requestSongsRequest);
                 userMessageInput.setText("");
