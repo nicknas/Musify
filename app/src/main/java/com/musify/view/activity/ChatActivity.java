@@ -1,19 +1,10 @@
 package com.musify.view.activity;
 
-import android.view.View;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
-
-import androidx.recyclerview.widget.LinearLayoutManager;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -21,13 +12,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.musify.R;
 import com.musify.model.MusifyAPIRequestQueue;
-
 import com.musify.model.message.Message;
 import com.musify.view.message.MessageAdapter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 
 public class ChatActivity extends AppCompatActivity {
@@ -97,7 +86,12 @@ public class ChatActivity extends AppCompatActivity {
                     }
                     titulo.setText(R.string.chatbot);
                     try {
-                        if (response.getString("intent").equals("Recoger canción") || response.getString("intent").equals("Recoger artista") || response.getString("intent").equals("Recoger album")) {
+                        if (response.getString("intent").equals("Recoger canción")
+                                || response.getString("intent").equals("Recoger artista")
+                                || response.getString("intent").equals("Recoger album")
+                                || response.getString("intent").equals("Recoger cancion v2")
+                                || response.getString("intent").equals("Recoger artista v2")
+                                || response.getString("intent").equals("Recoger album v2")) {
                             titulo.setText(getString(R.string.chatbot) + " está contestando");
                             requestRecommendationsRequest.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0,
                                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
